@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreambound Bookstore - Setting</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Englebert&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Englebert', cursive, sans-serif;
+        }
+
+        body {
+            background-color: #FC9D01; /* Warna oren asal website */
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR STYLE --- */
+        .sidebar {
+            width: 280px;
+            background-color: #0E2C46; /* Warna navy asal website */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 0;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .profile-section {
+            text-align: center;
+            padding: 0 20px 25px 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-img {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .profile-section h3 {
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: #FC9D01;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            margin-top: 25px;
+            flex-grow: 1;
+            padding: 0 15px;
+        }
+
+        .nav-links li {
+            margin-bottom: 8px;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Highlight Setting Menu */
+        .nav-links li.active a,
+        .nav-links li a:hover {
+            background: #FC9D01;
+            color: #0E2C46;
+            font-weight: bold;
+            transform: translateX(5px);
+        }
+
+        .logout-container {
+            padding: 0 15px;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #FC9D01;
+            cursor: pointer;
+            background: transparent;
+            color: #FC9D01;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-logout:hover {
+            background: #FC9D01;
+            color: #0E2C46;
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .main-content {
+            flex-grow: 1;
+            background-color: #FC9D01;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            color: #0E2C46;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+
+        /* --- SETTINGS GRID SYSTEM --- */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            align-items: start; /* Mengelakkan heretan tinggi kad yang tidak sekata */
+        }
+
+        .settings-card {
+            background-color: #FDF5E6;
+            border: 2px solid #0E2C46;
+            border-radius: 15px;
+            padding: 25px;
+            color: #0E2C46;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .settings-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #0E2C46;
+            padding-bottom: 8px;
+        }
+
+        /* Form Controls */
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 1.05rem;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 14px;
+            border: 2px solid #0E2C46;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            background: white;
+            color: #0E2C46;
+        }
+
+        .form-group input:disabled {
+            background-color: rgba(14, 44, 70, 0.1);
+            cursor: not-allowed;
+        }
+
+        /* Toggle Switch System */
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(14, 44, 70, 0.2);
+        }
+
+        .toggle-info h4 {
+            font-size: 1.05rem;
+            font-weight: bold;
+        }
+
+        .toggle-info p {
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid #0E2C46;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            border: 1px solid #0E2C46;
+        }
+
+        input:checked + .slider {
+            background-color: #0E2C46;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+            background-color: #FC9D01;
+        }
+
+        /* Action Buttons */
+        .btn-save {
+            background: #0E2C46;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            background: #1a446c;
+            transform: translateY(-2px);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- SIDEBAR NAVIGATION -->
+        <nav class="sidebar">
+            <div class="profile-section">
+                <img src="../img/logo1.png" alt="Dreambound Logo" class="logo-img">
+                <h3>DREAMBOUND</h3>
+                <p class="subtitle">BOOKSTORE</p>
+                <div class="user-info">
+                    <p><strong>ADMIN PORTAL</strong></p>
+                    <p>JAMES BUBUYA</p>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <!-- fas fa-chart-line is for Dashboard Status icon-->
+                <li><a href="ad_DashBoard.html"><i class="fas fa-chart-line"></i> DASHBOARD STATUS</a></li>
+                <!-- fas fa-shopping-cart is for Order Information icon-->
+                <li><a href="ad_OrderInfo.html"><i class="fas fa-shopping-cart"></i> ORDER INFORMATION</a></li>
+                <!-- fas fa-book is for Manage Book icon-->
+                <li><a href="ad_ManageBook.html"><i class="fas fa-book"></i> MANAGE BOOK</a></li>
+                <!-- fas fa-users is for Customer Information icon-->
+                <li><a href="ad_CustomerInfo.html"><i class="fas fa-users"></i> CUSTOMER INFORMATION</a></li>
+                <!-- fas fa-sliders-h is for Setting icon-->
+                <li class="active"><a href="ad_Settings.html"><i class="fas fa-sliders-h"></i> SETTING</a></li>
+            </ul>
+
+            <div class="logout-container">
+                <button class="btn-logout" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> LOG OUT</button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <h1 class="page-title">System Settings Portal</h1>
+
+            <div class="settings-grid">
+                <!-- PANEL KIRI: TETAPAN PROFIL ADMIN & SECURITY -->
+                <section class="settings-card">
+                    <h3><i class="fas fa-user-cog"></i> Profile & Administrative Credentials</h3>
+                    <form class="settings-form" onsubmit="saveProfile(event)">
+                        <div class="form-group">
+                            <label for="adminUsername">Admin Username (Account ID)</label>
+                            <input type="text" id="adminUsername" value="JAMES_BUBUYA99" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminName">Full Name</label>
+                            <input type="text" id="adminName" value="JAMES BUBUYA" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminEmail">Email Address</label>
+                            <input type="email" id="adminEmail" value="jamesbubuya@dreambound.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="currPassword">Current Password</label>
+                            <input type="password" id="currPassword" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Security Password</label>
+                            <input type="password" id="newPassword" placeholder="Enter new password if changing">
+                        </div>
+                        <button type="submit" class="btn-save"><i class="fas fa-user-shield"></i> Update Admin Credentials</button>
+                    </form>
+                </section>
+
+                <!-- PANEL KANAN: TETAPAN OPERASI KEDAI BUKU (STOREFRONT SETTINGS) -->
+                <section class="settings-card">
+                    <h3><i class="fas fa-store-alt"></i> Bookstore Operation Rules</h3>
+                    <form class="settings-form" onsubmit="saveStoreSettings(event)">
+                        
+                        <!-- Toggle Kedai Buka/Tutup -->
+                        <div class="toggle-group">
+                            <div class="toggle-info">
+                                <h4>Bookstore Online Status</h4>
+                                <p>Enable or disable client-side ordering system.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="storeStatus" checked>
+                                <span class="slider"></span>
+                                <span class="sr-only">Store Status Toggle</span>
+                            </label>
+                        </div>
+
+                        <!-- Toggle Maintenance Mode -->
+                        <div class="toggle-group">
+                            <div class="toggle-info">
+                                <h4>System Maintenance Mode</h4>
+                                <p>Locks website storefront for backend upgrades.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="maintenanceStatus">
+                                <span class="slider"></span>
+                                <span class="sr-only">Maintenance Mode</span>
+                            </label>
+                        </div>
+
+                        <!-- Pilihan Input Kos Penghantaran Asas -->
+                        <div class="form-group">
+                            <label for="shipSemenanjung">Base Shipping Rate - Peninsular (RM)</label>
+                            <input type="number" id="shipSemenanjung" step="0.10" value="4.50" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="shipBorneo">Base Shipping Rate - Sabah/Sarawak (RM)</label>
+                            <input type="number" id="shipBorneo" step="0.10" value="8.50" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="storeRegion">Default Store Currency & Operations Region</label>
+                            <select id="storeRegion">
+                                <option>Malaysia (MYR - RM)</option>
+                                <option>Singapore (SGD - $)</option>
+                                <option>Brunei (BND - $)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Deploy Store Operations Configuration</button>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simpan Tetapan Profil Admin
+        function saveProfile(event) {
+            event.preventDefault();
+            const name = document.getElementById('adminName').value;
+            alert("Administrative Account Sync Completed!\nProfile for \"" + name + "\" has been updated securely.");
+        }
+
+        // Simpan Tetapan Operasi Kedai
+        function saveStoreSettings(event) {
+            event.preventDefault();
+            const isOpen = document.getElementById('storeStatus').checked;
+            const isMaintenance = document.getElementById('maintenanceStatus').checked;
+            
+            let statusMsg = "Store Status: " + (isOpen ? "OPEN" : "CLOSED") + 
+                            "\nMaintenance Mode: " + (isMaintenance ? "ACTIVE" : "INACTIVE");
+                            
+            alert("Store Rules Deployed Successfully!\n" + statusMsg);
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out from the admin platform?")) {
+                window.location.href = "login.html";
+            }
+        }
+    </script>
+</body>
+</html>
