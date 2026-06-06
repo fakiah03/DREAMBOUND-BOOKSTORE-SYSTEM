@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../db.php'; // Hubungkan ke database
+require_once '../db.php'; 
 
 // 1. SECURITY RESTRICTION: Ensure only authorized Admins can enter this page
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -10,12 +10,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 $alert_message = "";
 
-// 2. FUNGSI KEMAS KINI STATUS PESANAN (Tukar Status Logistik)
+// 2. Function to update order status (Change Logistics Status)
 if (isset($_GET['update_id']) && isset($_GET['new_status'])) {
     $order_id = intval($_GET['update_id']);
     $new_status = mysqli_real_escape_string($conn, strtolower(trim($_GET['new_status'])));
     
-    // Pastikan admin hanya masuk status yang dibenarkan
+    // Ensure admin can only set allowed statuses
     $allowed_status = ['pending', 'shipped', 'delivered', 'cancelled'];
     if (in_array($new_status, $allowed_status)) {
         $conn->query("UPDATE orders SET status = '$new_status' WHERE id = $order_id");
@@ -26,13 +26,13 @@ if (isset($_GET['update_id']) && isset($_GET['new_status'])) {
     }
 }
 
-// 3. DAPATKAN STATISTIK UNTUK 4 KAD DI ATAS
+// 3. Retrieve statistics for the 4 widgets above
 $stat_new = $conn->query("SELECT COUNT(*) as total FROM orders WHERE status = 'pending'")->fetch_assoc()['total'];
 $stat_shipped = $conn->query("SELECT COUNT(*) as total FROM orders WHERE status = 'shipped'")->fetch_assoc()['total'];
 $stat_delivered = $conn->query("SELECT COUNT(*) as total FROM orders WHERE status = 'delivered'")->fetch_assoc()['total'];
 $stat_total = $conn->query("SELECT COUNT(*) as total FROM orders")->fetch_assoc()['total'];
 
-// 4. DAPATKAN SENARAI PESANAN BERSERTA NAMA PELANGGAN
+// 4. Retrieve the list of orders along with customer names
 $sql_orders = "
     SELECT 
         o.id as order_id, 
@@ -60,7 +60,7 @@ $orders_result = $conn->query($sql_orders);
     <link href="https://fonts.googleapis.com/css2?family=Englebert&display=swap" rel="stylesheet">
     
     <style>
-        /* KESEMUA CSS ANDA DIKEKALKAN 100% TANPA SEBARANG PERUBAHAN */
+       
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Englebert', cursive, sans-serif; }
         body { background-color: #FC9D01; display: flex; height: 100vh; overflow: hidden; }
         .container { display: flex; width: 100%; height: 100vh; }
@@ -210,7 +210,7 @@ $orders_result = $conn->query($sql_orders);
                                 $status_class = strtolower($row['order_status']); // pending, shipped dll
                                 $date_formatted = date("d F Y", strtotime($row['order_date']));
                                 
-                                // Dapatkan senarai buku untuk pesanan ini
+                                // Get the list of books for this order.
                                 $books_str = "No items";
                                 $book_query = $conn->query("SELECT b.title, oi.quantity FROM order_items oi JOIN books b ON oi.book_id = b.id WHERE oi.order_id = $order_id");
                                 if ($book_query && $book_query->num_rows > 0) {
@@ -236,7 +236,7 @@ $orders_result = $conn->query($sql_orders);
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" style="text-align: center; font-weight: bold;">Tiada pesanan dijumpai di dalam pangkalan data.</td>
+                                <td colspan="7" style="text-align: center; font-weight: bold;">No orders were found in the database.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -256,19 +256,19 @@ $orders_result = $conn->query($sql_orders);
     </div>
 
     <script>
-        // Paparkan alert jika PHP berjaya proses atau ralat
+        // Show an alert for PHP success or error status.
         <?php if(!empty($alert_message)): ?>
             alert("<?php echo $alert_message; ?>");
         <?php endif; ?>
 
-        // 1. LOGIK PENAPIS STATUS (BERFUNGSI SECARA LIVE PADA JADUAL HTML)
+        // 1. Live status filter logic for the HTML table.
         function filterStatus(statusType) {
-            // Tukar warna tab aktif
+            // hange the color of the active tab.
             const tabs = document.querySelectorAll('.tab-btn');
             tabs.forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Tapis baris jadual (table rows)
+            // Filter rows in the table. if 'all' is selected, show all rows. Otherwise, show only rows that match the selected status.
             const rows = document.querySelectorAll('.order-row');
             rows.forEach(row => {
                 if (statusType === 'all') {
@@ -283,7 +283,7 @@ $orders_result = $conn->query($sql_orders);
             });
         }
 
-        // 2. LOGIK CARIAN (SEARCH)
+        // 2. SEARCH LOGIC
         document.getElementById('searchInput').addEventListener('input', function() {
             let searchValue = this.value.toLowerCase();
             const rows = document.querySelectorAll('.order-row');
@@ -300,16 +300,16 @@ $orders_result = $conn->query($sql_orders);
             });
         });
 
-        // 3. OPERASI PAPAR BUTIRAN (Buat masa ni kekal alert)
+        // 3. Detail view operation (currently using alert only).
         function triggerView(displayId) {
             alert("Fetching and generating Invoice details for Order " + displayId + "\nPreparing digital receipt view...");
         }
 
-        // 4. OPERASI TUKAR STATUS (MENGHUBUNG KE PHP)
+        // 4. Detail view operation (currently using alert only). In the future, this can be enhanced to open a modal with detailed information and options to print the invoice.
         function triggerUpdate(orderId, displayId) {
             let nextStatus = prompt("Update status for " + displayId + ":\nType: Pending, Shipped, Delivered, or Cancelled");
             if(nextStatus) {
-                // Halakan ke URL untuk diproses oleh PHP
+                // Redirect to a URL for PHP processing.
                 window.location.href = "ad_OrderInfo.php?update_id=" + orderId + "&new_status=" + encodeURIComponent(nextStatus);
             }
         }

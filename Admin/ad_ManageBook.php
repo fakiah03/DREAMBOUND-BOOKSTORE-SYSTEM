@@ -10,7 +10,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 $alert_message = "";
 
-// 2. FUNGSI TAMBAH BUKU (POST REQUEST)
+// 2. Function to add a book (POST request)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_book'])) {
     $title  = mysqli_real_escape_string($conn, trim($_POST['title']));
     $author = mysqli_real_escape_string($conn, trim($_POST['author']));
@@ -18,11 +18,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_book'])) {
     $price  = floatval($_POST['price']);
     $stock  = intval($_POST['stock']);
     
-    // Untuk gambar, kita letak default.jpg sementara jika tak ada upload
+    // For the image, we'll use default.jpg as a placeholder if no upload is provided
     $book_img = 'img/default-book.jpg';
     if(isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] == 0){
         $book_img = 'img/' . basename($_FILES['cover_image']['name']);
-        // Kod sebenar akan move_uploaded_file ke folder ../img/ di sini
+        // The actual code will use move_uploaded_file to move the uploaded file to the ../img/ folder
     }
 
     $sql = "INSERT INTO books (title, author, genre, price, stock, book_img) VALUES ('$title', '$author', '$genre', '$price', '$stock', '$book_img')";
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_book'])) {
     }
 }
 
-// 3. FUNGSI KEMAS KINI HARGA BUKU SAHAJA (Ikut gaya prompt asal anda)
+// 3. Function to update book price only (following the original style)
 if (isset($_GET['edit_id']) && isset($_GET['new_price'])) {
     $id = intval($_GET['edit_id']);
     $new_price = floatval($_GET['new_price']);
@@ -43,7 +43,7 @@ if (isset($_GET['edit_id']) && isset($_GET['new_price'])) {
     $alert_message = "Inventory Updated!\\nNew price is set to RM " . number_format($new_price, 2);
 }
 
-// 4. FUNGSI PADAM BUKU
+// 4. Function to delete a book
 if (isset($_GET['delete_id'])) {
     $id = intval($_GET['delete_id']);
     $conn->query("DELETE FROM books WHERE id = $id");
@@ -51,12 +51,12 @@ if (isset($_GET['delete_id'])) {
     $alert_message = "Book has been removed permanently.";
 }
 
-// 5. DAPATKAN STATISTIK UNTUK KOTAK MINI
+// 5. Retrieve statistics for the dashboard widget.
 $stat_books = $conn->query("SELECT COUNT(id) as total FROM books")->fetch_assoc()['total'];
 $stat_critical = $conn->query("SELECT COUNT(id) as total FROM books WHERE stock <= 5")->fetch_assoc()['total'];
 $stat_genres = $conn->query("SELECT COUNT(DISTINCT genre) as total FROM books")->fetch_assoc()['total'];
 
-// 6. DAPATKAN SENARAI BUKU
+// 6. Retrieve the list of books
 $books = $conn->query("SELECT * FROM books ORDER BY id DESC");
 ?>
 

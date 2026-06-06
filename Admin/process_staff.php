@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../db.php'; // Sila pastikan jalan fail database anda betul
+require_once '../db.php'; 
 
 // Sekatan Keselamatan: Pastikan hanya Admin sahaja yang boleh jalankan proses ini
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {

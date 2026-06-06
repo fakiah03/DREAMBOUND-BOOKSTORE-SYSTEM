@@ -522,6 +522,8 @@ $customers_list = $conn->query($sql_select_users);
                 <div class="stat-card">
                     <div>
                         <h4>New Members</h4>
+                        <!-- Note: "Tier" is used here to maintain consistency with the membership tier terminology -->
+                         <!-- echo numer_format() is used to format the number with commas for better readability -->
                         <p><?php echo number_format($new_customers); ?> Tier</p>
                     </div>
                     <i class="fas fa-user-plus"></i>

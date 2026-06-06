@@ -8,41 +8,41 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// 2. QUERY UNTUK ROW 1: 4 KAD STATISTIK UTAMA (DIURUSKAN MENGIKUT DB ANDA)
+// 2. QUERY FOR ROW 1: CORE STAT CARDS (use created_at for time-sensitive data like sales/orders, and role/status for users/orders)
 
-// Kad 1: Total Sales (Menggunakan lajur total_amount)
+// card 1: Total Sales 
 $res_sales = $conn->query("SELECT SUM(total_amount) as total FROM orders");
 $row_sales = $res_sales->fetch_assoc();
 $total_sales = $row_sales['total'] ?? 0;
 
-// Kad 2: Active Orders (Menggunakan status huruf kecil 'pending')
+// card 2: Active Orders (status = 'pending')
 $res_orders = $conn->query("SELECT COUNT(*) as total FROM orders WHERE status = 'pending'");
 $row_orders = $res_orders->fetch_assoc();
 $active_orders = $row_orders['total'] ?? 0;
 
-// Kad 3: Total Books
+// card 3: Total Books
 $res_books = $conn->query("SELECT COUNT(*) as total FROM books");
 $row_books = $res_books->fetch_assoc();
 $total_books = $row_books['total'] ?? 0;
 
-// Kad 4: Registered Users (Menggunakan role 'customer')
+// card 4: Registered Users (using role 'customer')
 $res_users = $conn->query("SELECT COUNT(*) as total FROM users WHERE role = 'customer'");
 $row_users = $res_users->fetch_assoc();
 $total_customers = $row_users['total'] ?? 0;
 
 
-// 3. QUERY UNTUK ROW 2: SEGMENTASI BUKU (INSIGHTS)
-// Best Seller: Ambil 2 buku yang jualan (sold_qty) paling tinggi
+// 3. QUERY FOR ROW 2: BEST SELLER, LOWER STOCK, WORST SELLER (use sold_qty for sales performance and stock for inventory status)
+// Best Seller: pick 2 best-selling books based on sold_qty
 $best_result = $conn->query("SELECT * FROM books ORDER BY sold_qty DESC LIMIT 2");
 
-// Lower Stock: Ambil 2 buku yang stoknya paling kritikal (stok <= 10)
+// Lower Stock: pick 2 books with the lowest stock (stock <= 10)
 $low_stock_result = $conn->query("SELECT * FROM books WHERE stock <= 10 ORDER BY stock ASC LIMIT 2");
 
-// Worst Seller: Ambil 2 buku yang jualan paling rendah
+// Worst Seller: pick 2 books with the lowest sales (sold_qty)
 $worst_result = $conn->query("SELECT * FROM books ORDER BY sold_qty ASC LIMIT 2");
 
 
-// 4. QUERY UNTUK ROW 3: STRUKTUR GRAFIK ANALYTICS & KPI (Menggunakan created_at)
+// 4. QUERY FOR ROW 3: STRUCTURE OF ANALYTICS & KPI (using created_at)
 
 $wk1_res = $conn->query("SELECT SUM(total_amount) as total FROM orders WHERE WEEK(created_at, 1) = WEEK(NOW(), 1) - 3");
 $wk1_sales = $wk1_res->fetch_assoc()['total'] ?? 0;
@@ -56,27 +56,27 @@ $wk3_sales = $wk3_res->fetch_assoc()['total'] ?? 0;
 $wk4_res = $conn->query("SELECT SUM(total_amount) as total FROM orders WHERE WEEK(created_at, 1) = WEEK(NOW(), 1)");
 $wk4_sales = $wk4_res->fetch_assoc()['total'] ?? 0;
 
-// Hitung peratusan pencapaian sasaran KPI (Sasaran: RM 15,000)
+// calculate KPI achievement percentage (assuming target is RM15,000 for the month)
 $kpi_target = 15000;
 $kpi_percentage = ($total_sales > 0) ? ($total_sales / $kpi_target) * 100 : 0;
 if ($kpi_percentage > 100) $kpi_percentage = 100; // Maksimum bar 100%
 
 
-// 5. QUERY UNTUK DINAMIKKAN VOUCHERS, USERS & REVIEWS
+// 5. QUERY FOR DYNAMIC CONTENT IN ROW 4 & 5: Vouchers, Reviews, System Logs, Staff List (use status for vouchers/reviews and role for staff)
 
-// Ambil senarai baucar aktif
+// pick 2 active vouchers to display in the voucher management panel
 $vouchers_result = $conn->query("SELECT * FROM vouchers WHERE status = 'active' LIMIT 2");
 
-// Ambil senarai ulasan yang belum diproses (pending) berserta nama pengguna & tajuk buku
+// Retrieve the list of pending reviews that have not yet been processed, along with the user's name and the book title.
 $reviews_result = $conn->query("SELECT r.*, u.fullname, b.title FROM reviews r 
                                 JOIN users u ON r.user_id = u.id 
                                 JOIN books b ON r.book_id = b.id 
                                 WHERE r.status = 'pending'");
 
-// Ambil log sistem dari jadual system_logs
+// Retrieve system logs from the system_logs table
 $logs_result = $conn->query("SELECT * FROM system_logs ORDER BY created_at DESC LIMIT 3");
 
-// Ambil senarai kakitangan aktif (clerk & manager) untuk dipaparkan di panel bawah
+// Retrieve the list of active staff members (clerk & manager) to be displayed in the bottom panel
 $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role IN ('clerk', 'manager', 'admin') ORDER BY role DESC");
 ?>
 <!DOCTYPE html>
@@ -101,7 +101,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
         }
 
         body {
-            background-color: #FC9D01; /* Warna oren asal website */
+            background-color: #FC9D01; 
             display: flex;
             height: 100vh;
             overflow: hidden;
@@ -116,7 +116,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
         /* --- SIDEBAR STYLE --- */
         .sidebar {
             width: 280px;
-            background-color: #0E2C46; /* Warna navy asal website */
+            background-color: #0E2C46; 
             color: white;
             display: flex;
             flex-direction: column;
@@ -718,7 +718,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
                         </div>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <p style="font-size:0.9rem; color:#ccc;">Semua stok mencukupi (>10).</p>
+                        <p style="font-size:0.9rem; color:#ccc;">All stock is sufficient. (>10).</p>
                     <?php endif; ?>
                 </div>
 
@@ -736,7 +736,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
                         </div>
                         <?php endwhile; ?>
                     <?php else: ?>
-                        <p style="font-size:0.9rem; color:#ccc;">Tiada data inventori.</p>
+                        <p style="font-size:0.9rem; color:#ccc;">No inventory data available.</p>
                     <?php endif; ?>
                 </div>
             </section>
@@ -801,7 +801,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
                                 </li>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <li class="data-item">Tiada baucar aktif buat masa ini.</li>
+                            <li class="data-item">No active vouchers are available at this time.</li>
                         <?php endif; ?>
                     </ul>
                 </div>
@@ -835,7 +835,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
                                 </li>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <li class="data-item">Tiada data kakitangan ditemui.</li>
+                            <li class="data-item">No staff data found.</li>
                         <?php endif; ?>
                     </ul>
                 </div>
@@ -860,7 +860,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
                             </div>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <p style="font-size:0.9rem; color:#555;">Tiada ulasan pelanggan baharu untuk ditapis.</p>
+                            <p style="font-size:0.9rem; color:#555;">No new customer reviews to moderate.</p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -868,7 +868,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
                 <div class="panel-box">
                     <h3><i class="fas fa-terminal"></i> Live Security & Activity System Logs</h3>
                         <div class="log-terminal" id="log-box">
-                        <div class="log-line"><span class="log-time">[...]:</span> Menghubungkan ke terminal log...</div>
+                        <div class="log-line"><span class="log-time">[...]:</span> Connecting to log terminal...</div>
                     </div>
                 </div>
             </section>

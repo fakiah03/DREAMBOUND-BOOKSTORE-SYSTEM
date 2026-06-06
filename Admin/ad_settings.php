@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../db.php'; // Sambungan ke database anda
+require_once '../db.php'; 
 
-// 1. SEKATAN KESELAMATAN ADMIN
+// 1. SECUTY CHECK: makesure only logged-in admins can access this page. If not, redirect to login page.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../Auth/login.php");
     exit();
@@ -11,16 +11,16 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 $admin_id = $_SESSION['user_id'];
 $alert_message = "";
 
-// Semak data default menggunakan store_status untuk mengelakkan ralat 'Unknown column id'
+// check if store_settings table has at least one row, if not, insert default settings. This ensures that the settings page always has data to work with and prevents errors when trying to access non-existent settings.
 $check_empty = $conn->query("SELECT store_status FROM store_settings LIMIT 1");
 if (!$check_empty || $check_empty->num_rows == 0) {
     $conn->query("INSERT INTO store_settings (id, store_status, maintenance_mode, ship_semenanjung, ship_borneo, store_region) VALUES (1, 'open', 'inactive', 4.50, 8.50, 'Malaysia (MYR - RM)')");
 }
 
-// 3. PROSES BORANG HANTARAN (POST)
+// 3. PROCESS FORM SUBMISSIONS: Handle updates for both admin profile and store settings based on which form is submitted. Each form has a hidden input to indicate its purpose, allowing the same PHP block to process both types of updates without confusion.
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // TINDAKAN 1: KEMAS KINI PROFIL ADMIN
+    // ACTION 1: UPDATE ADMIN PROFILE & CREDENTIALS
     if (isset($_POST['action_profile'])) {
         $fullname = mysqli_real_escape_string($conn, trim($_POST['adminName']));
         $email = mysqli_real_escape_string($conn, trim($_POST['adminEmail']));
@@ -28,9 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $new_pass = trim($_POST['newPassword']);
         
         if (!empty($fullname) && !empty($email)) {
-            // Jika admin mahu menukar password
+            // if admin need to change  their password, the system will verify the current password first before allowing the update. This adds an extra layer of security to prevent unauthorized changes to the admin account.
             if (!empty($new_pass)) {
-                // Semak password lama terlebih dahulu
+                // check current password against the database. If it matches, proceed to update the password along with the name and email.
                 $pass_check = $conn->query("SELECT password FROM users WHERE id = '$admin_id'");
                 $user_data = $pass_check->fetch_assoc();
                 
@@ -42,15 +42,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $alert_message = "Error: Current password verification failed!";
                 }
             } else {
-                // Jika tidak tukar password, kemas kini nama dan email sahaja
+                // if admin does not want to change the password, only update the name and email
                 $conn->query("UPDATE users SET fullname = '$fullname', email = '$email' WHERE id = '$admin_id'");
-                $_SESSION['fullname'] = $fullname; // Kemas kini sesi nama admin
+                $_SESSION['fullname'] = $fullname; // update the admin's name in the session
                 $alert_message = "Administrative Account Sync Completed!\\nProfile for \\\"" . $fullname . "\\\" has been updated securely.";
             }
         }
     }
 
-    // TINDAKAN 2: KEMAS KINI OPERASI STOR & SHIPPING RATE
+    // Action 2: Update store operations and shipping rate.
     if (isset($_POST['action_store'])) {
         $store_status = isset($_POST['storeStatus']) ? 'open' : 'closed';
         $maintenance_mode = isset($_POST['maintenanceStatus']) ? 'active' : 'inactive';
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $ship_borneo = mysqli_real_escape_string($conn, $_POST['shipBorneo']);
         $store_region = mysqli_real_escape_string($conn, $_POST['storeRegion']);
         
-        // Kemas kini baris rekod pertama
+        // update the store settings in the database based on the form input. The system will then provide feedback on the new store status and maintenance mode to confirm that the changes have been applied successfully.
         $update_store = $conn->query("UPDATE store_settings SET 
             store_status = '$store_status', 
             maintenance_mode = '$maintenance_mode', 
@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// 4. AMBIL DATA TERKINI DARI DATABASE (Telah dibuang lajur 'username' yang tiada dalam db)
+// 4. Fetch the latest data from the database (the 'username' column has been removed as it does not exist in the database).
 $admin_query = $conn->query("SELECT fullname, email FROM users WHERE id = '$admin_id'");
 $admin_info = $admin_query->fetch_assoc();
 
@@ -104,7 +104,7 @@ $store_info = $store_query->fetch_assoc();
         }
 
         body {
-            background-color: #FC9D01; /* Warna oren asal website */
+            background-color: #FC9D01; 
             display: flex;
             height: 100vh;
             overflow: hidden;
@@ -119,8 +119,7 @@ $store_info = $store_query->fetch_assoc();
         /* --- SIDEBAR STYLE --- */
         .sidebar {
             width: 280px;
-            background-color: #0E2C46; /* Warna navy asal website */
-            color: white;
+            background-color: #0E2C46; 
             display: flex;
             flex-direction: column;
             padding: 30px 0;
