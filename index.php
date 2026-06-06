@@ -9,9 +9,9 @@ if (isset($_SESSION['user_id'])) {
     $isLoggedIn = true;
     // Tentukan hala tuju mengikut role pengguna
     if ($_SESSION['role'] === 'admin') {
-        $dashboardURL = 'Admin/ad_Dashboard.html'; // Tukar ke .php jika dashboard admin anda berformat php
+        $dashboardURL = 'Admin/ad_Dashboard.php'; // Tukar ke .php jika dashboard admin anda berformat php
     } else {
-        $dashboardURL = 'Customer/cust_home.html';
+        $dashboardURL = 'Customer/cust_home.php';
     }
 }
 ?>
