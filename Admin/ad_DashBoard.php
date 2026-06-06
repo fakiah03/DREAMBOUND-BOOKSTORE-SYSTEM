@@ -904,7 +904,7 @@ $staff_list_result = $conn->query("SELECT fullname, role FROM users WHERE role I
 
     function confirmLogout() {
         if (confirm("Are you sure you want to log out?")) {
-            window.location.href = "Auth/logout.php"; 
+            window.location.href = "../logout.php"; 
         }
     }
 </script>

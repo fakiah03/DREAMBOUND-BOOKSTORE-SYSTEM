@@ -283,7 +283,7 @@ $total_price = $subtotal + $shipping_fee;
                 </ul>
             </nav>
 
-            <button class="logout-btn" onclick="location.href='../Auth/logout.php'"><i class="fas fa-sign-out-alt"></i> LOG OUT</button>
+            <button class="logout-btn" onclick="location.href='../logout.php'"><i class="fas fa-sign-out-alt"></i> LOG OUT</button>
         </aside>
 
         <main class="content">

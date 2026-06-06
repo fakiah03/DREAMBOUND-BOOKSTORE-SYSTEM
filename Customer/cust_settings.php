@@ -391,7 +391,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <li><a href="/DreamBoundBookStrore_system/Customer/cust_settings.php" class="menu-item active"><i class="fas fa-sliders-h"></i> SETTINGS</a></li>
                 </ul>
             </nav>
-            <button class="logout-btn" onclick="location.href='../Auth/logout.php'"><i class="fas fa-sign-out-alt"></i> LOG OUT</button>
+            <button class="logout-btn" onclick="location.href='../logout.php'"><i class="fas fa-sign-out-alt"></i> LOG OUT</button>
         </aside>
 
         <main class="content">

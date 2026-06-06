@@ -55,11 +55,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($conn->query($sql_register) === TRUE) {
         
-        // 6. REKOD PENDAFTARAN BAHARU KE JADUAL SYSTEM_LOGS (Diubah sedikit mesej log untuk memapar ID baharu)
+        // 6. REKOD PENDAFTARAN BAHARU KE JADUAL SYSTEM_LOGS
         $log_msg = "New user $fullname ($email) has registered with ID $customer_id_str.";
         $conn->query("INSERT INTO system_logs (log_message) VALUES ('$log_msg')");
 
-        // 7. Logik hala tuju selepas berjaya (Ditambah paparan ID pada alert box)
+        // 7. AUTO LOGIN — set session so customer lands on cust_home.php directly
+        $new_user_id = $conn->insert_id;
+        $_SESSION['user_id']  = $new_user_id;
+        $_SESSION['fullname'] = $fullname;
+        $_SESSION['role']     = 'customer';
+
         echo "<script>alert('Register successful! Your Customer ID is $customer_id_str'); window.location.href='../Customer/cust_home.php';</script>";
         exit();
 

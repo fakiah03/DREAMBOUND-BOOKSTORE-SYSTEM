@@ -19,13 +19,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_book'])) {
     $stock  = intval($_POST['stock']);
     
     // Untuk gambar, kita letak default.jpg sementara jika tak ada upload
-    $image_url = 'default-book.png';
+    $book_img = 'img/default-book.jpg';
     if(isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] == 0){
-        $image_url = basename($_FILES['cover_image']['name']);
+        $book_img = 'img/' . basename($_FILES['cover_image']['name']);
         // Kod sebenar akan move_uploaded_file ke folder ../img/ di sini
     }
 
-    $sql = "INSERT INTO books (title, author, genre, price, stock, image_url) VALUES ('$title', '$author', '$genre', '$price', '$stock', '$image_url')";
+    $sql = "INSERT INTO books (title, author, genre, price, stock, book_img) VALUES ('$title', '$author', '$genre', '$price', '$stock', '$book_img')";
     
     if ($conn->query($sql) === TRUE) {
         $conn->query("INSERT INTO system_logs (log_message) VALUES ('Admin menambah buku baharu: $title')");
@@ -296,7 +296,7 @@ $books = $conn->query("SELECT * FROM books ORDER BY id DESC");
                         <?php if($books && $books->num_rows > 0): ?>
                             <?php while($row = $books->fetch_assoc()): ?>
                                 <tr>
-                                    <td><img src="../img/<?php echo !empty($row['image_url']) ? $row['image_url'] : 'book1.jpg'; ?>" alt="Cover" class="book-cover-cell" onerror="this.src='../img/logo1.png'"></td>
+                                    <td><img src="../img/<?php echo !empty($row['book_img']) ? $row['book_img'] : 'book1.jpg'; ?>" alt="Cover" class="book-cover-cell" onerror="this.src='../img/logo1.png'"></td>
                                     <td><strong><?php echo htmlspecialchars($row['title']); ?></strong></td>
                                     <td><?php echo htmlspecialchars($row['author']); ?></td>
                                     <td><?php echo htmlspecialchars($row['genre']); ?></td>

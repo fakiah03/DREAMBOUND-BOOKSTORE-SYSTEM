@@ -340,7 +340,7 @@ $conn->close();
                 </button>
 
                 <div class="links-container">
-                    <a href="#" class="forgot-pass">Forgot Password?</a>
+                    <a href="forgot_password.php" class="forgot-pass">Forgot Password?</a>
                     <p class="signup-text">
                         New to Dreambound? <a href="signup.php" class="signup-link">Sign up here</a>
                     </p>
