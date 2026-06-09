@@ -181,6 +181,7 @@ $user_data = ($user_q && $user_q->num_rows > 0) ? $user_q->fetch_assoc() : [];
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dreambound Bookstore - Checkout</title>
     <link href="https://fonts.googleapis.com/css2?family=Englebert&display=swap" rel="stylesheet">
